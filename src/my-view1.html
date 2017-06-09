@@ -1,0 +1,71 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu-light.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<dom-module id="my-view1">
+  <template>
+    <style include="shared-styles">
+       :host {
+        display: block;
+
+        padding: 10px;
+      }
+    </style>
+
+    <iron-ajax auto url={{url}} handle-as="json" last-response="{{items}}"></iron-ajax>
+    <paper-input id="queryInput" on-keyup="callSuggest" value="{{selected.innerText}}"></paper-input>
+
+    <template is="dom-if" if="{{items}}">
+    <!--  <paper-dropdown-menu-light label="" no-animations selected-item="" opened="true">-->
+        <paper-listbox slot="dropdown-content" class="dropdown-content" selected-item="{{selected}}" on-iron-select="oneSelected">
+          <template is="dom-repeat" items="{{items.entries}}">
+            <paper-item>{{item.entry}}</paper-item>
+          </template>
+        </paper-listbox>
+      <!-- </paper-dropdown-menu-light>-->
+    </template>
+
+
+  </template>
+
+  <script>
+    class MyView1 extends Polymer.Element {
+      static get is() { return 'my-view1'; }
+
+      static get properties() {
+        return {
+          url: {
+            type: String,
+            value:""
+          }
+        }
+      }
+
+ oneSelected() {
+   console.log(this.selected)
+   this.url= "http://localhost:19010/suggest/service/mySuggest?q=" + this.selected.innerText + "&output=json&exhaustive=true"
+ }
+
+      callSuggest() {
+        var query = this.$.queryInput.value
+        this.url= "http://localhost:19010/suggest/service/mySuggest?q=" + query + "&output=json&exhaustive=true"
+        console.log(this.url)
+       
+      }
+    }
+    window.customElements.define(MyView1.is, MyView1);
+  </script>
+</dom-module>
